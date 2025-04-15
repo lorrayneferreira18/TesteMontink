@@ -4,7 +4,16 @@ html {
   --highlight-color: #fff;
   --box-highlight: rgba(0, 0, 0, 0.8);
 }
+.drag-over {
+  opacity: 0.5;
+  border: 2px dashed #007bff;
+  transition: all 0.3s ease;
+}
 
+[draggable] {
+  cursor: move;
+  user-select: none;
+}
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",

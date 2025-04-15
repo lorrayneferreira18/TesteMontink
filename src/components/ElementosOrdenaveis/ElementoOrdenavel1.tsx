@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface CardItem {
   id: number;
@@ -8,7 +8,7 @@ interface CardItem {
 }
 
 const ElementoOrdenavel1: React.FC = () => {
-  const cards: CardItem[] = [
+  const [cards, setCards] = useState<CardItem[]>([
     {
       id: 1,
       title: "Elemento 1",
@@ -33,7 +33,58 @@ const ElementoOrdenavel1: React.FC = () => {
       value: "$40,000",
       icon: "fas fa-calendar",
     },
-  ];
+  ]);
+
+  const [draggedItem, setDraggedItem] = useState<CardItem | null>(null);
+  const [dragOverId, setDragOverId] = useState<number | null>(null);
+
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    item: CardItem
+  ) => {
+    setDraggedItem(item);
+    e.dataTransfer.effectAllowed = "move";
+    // Armazenamos apenas o ID como string
+    e.dataTransfer.setData("text/plain", item.id.toString());
+  };
+
+  const handleDragOver = (
+    e: React.DragEvent<HTMLDivElement>,
+    item: CardItem
+  ) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverId(item.id);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverId(null);
+  };
+
+  const handleDrop = (
+    e: React.DragEvent<HTMLDivElement>,
+    targetItem: CardItem
+  ) => {
+    e.preventDefault();
+    setDragOverId(null);
+
+    if (!draggedItem) return;
+
+    const draggedId = parseInt(e.dataTransfer.getData("text/plain"));
+    const currentItem = cards.find((item) => item.id === draggedId);
+
+    if (!currentItem) return;
+
+    const currentIndex = cards.findIndex((item) => item.id === draggedId);
+    const targetIndex = cards.findIndex((item) => item.id === targetItem.id);
+
+    if (currentIndex !== targetIndex) {
+      const newCards = [...cards];
+      newCards.splice(currentIndex, 1);
+      newCards.splice(targetIndex, 0, currentItem);
+      setCards(newCards);
+    }
+  };
 
   return (
     <div className="row">
@@ -41,7 +92,17 @@ const ElementoOrdenavel1: React.FC = () => {
         <h1>Elemento Ordenável 1</h1>
       </div>
       {cards.map((card) => (
-        <div key={card.id} className="col-md-6 col-xl-3 mb-4">
+        <div
+          key={card.id}
+          className={`col-md-6 col-xl-3 mb-4 ${
+            dragOverId === card.id ? "drag-over" : ""
+          }`}
+          draggable
+          onDragStart={(e) => handleDragStart(e, card)}
+          onDragOver={(e) => handleDragOver(e, card)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => handleDrop(e, card)}
+        >
           <div className="card shadow border-left-primary py-2">
             <div className="card-body">
               <div className="row g-0 align-items-center">

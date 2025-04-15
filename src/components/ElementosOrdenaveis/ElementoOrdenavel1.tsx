@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ModalComponent from "../ModalComponent/ModalComponent";
 
 interface CardItem {
   id: number;
@@ -37,17 +38,26 @@ const ElementoOrdenavel1: React.FC = () => {
 
   const [draggedItem, setDraggedItem] = useState<CardItem | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [editingCard, setEditingCard] = useState<CardItem | null>(null);
+  const [tempTitle, setTempTitle] = useState("");
+  const [tempValue, setTempValue] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     item: CardItem
   ) => {
     setDraggedItem(item);
+    setIsDragging(true);
     e.dataTransfer.effectAllowed = "move";
-    // Armazenamos apenas o ID como string
     e.dataTransfer.setData("text/plain", item.id.toString());
   };
 
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setDraggedItem(null);
+  };
   const handleDragOver = (
     e: React.DragEvent<HTMLDivElement>,
     item: CardItem
@@ -86,6 +96,26 @@ const ElementoOrdenavel1: React.FC = () => {
     }
   };
 
+  const handleCardClick = (card: CardItem) => {
+    setEditingCard(card);
+    setTempTitle(card.title);
+    setTempValue(card.value);
+    setShowModal(true);
+  };
+
+  const handleSaveChanges = () => {
+    if (!editingCard) return;
+
+    setCards(
+      cards.map((card) =>
+        card.id === editingCard.id
+          ? { ...card, title: tempTitle, value: tempValue }
+          : card
+      )
+    );
+    setShowModal(false);
+  };
+
   return (
     <div className="row">
       <div className="col-xxl-12">
@@ -99,9 +129,14 @@ const ElementoOrdenavel1: React.FC = () => {
           }`}
           draggable
           onDragStart={(e) => handleDragStart(e, card)}
+          onDragEnd={handleDragEnd}
           onDragOver={(e) => handleDragOver(e, card)}
           onDragLeave={handleDragLeave}
           onDrop={(e) => handleDrop(e, card)}
+          onClick={() => !isDragging && handleCardClick(card)}
+          style={{
+            cursor: isDragging ? "grabbing" : "pointer",
+          }}
         >
           <div className="card shadow border-left-primary py-2">
             <div className="card-body">
@@ -122,6 +157,56 @@ const ElementoOrdenavel1: React.FC = () => {
           </div>
         </div>
       ))}
+
+      <ModalComponent show={showModal} onClose={() => setShowModal(false)}>
+        <div className="modal-header">
+          <h5 className="modal-title">Editar Elemento Ordenável 1</h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setShowModal(false)}
+            aria-label="Close"
+          ></button>
+        </div>
+        <div className="modal-body">
+          <form className="mt-4">
+            <div className="mb-3">
+              <label className="form-label">Título</label>
+              <input
+                type="text"
+                className="form-control"
+                value={tempTitle}
+                onChange={(e) => setTempTitle(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Valor</label>
+              <input
+                type="text"
+                className="form-control"
+                value={tempValue}
+                onChange={(e) => setTempValue(e.target.value)}
+              />
+            </div>
+          </form>
+        </div>
+        <div className="modal-footer">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => setShowModal(false)}
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleSaveChanges}
+          >
+            Salvar Alterações
+          </button>
+        </div>
+      </ModalComponent>
     </div>
   );
 };

@@ -59,6 +59,18 @@ body {
   padding-bottom: 60px; /* Espaço para o footer */
 }
 
+[id^="elemento-ordenavel-1-"] {
+  scroll-margin-top: 100px;
+}
+[id^="elemento-ordenavel-2-"] {
+  scroll-margin-top: 100px;
+}
+[id^="elemento-ordenavel-3-"] {
+  scroll-margin-top: 100px;
+}
+[id^="elemento-ordenavel-4-"] {
+  scroll-margin-top: 100px;
+}
 .sidebar-brand-icon {
   transform: rotate(-15deg);
 }

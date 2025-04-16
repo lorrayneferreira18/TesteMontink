@@ -174,7 +174,7 @@ const ElementoOrdenavel3: React.FC = () => {
     <>
       <div className="row">
         <div className="col-xxl-12">
-          <h1>Elemento Ordenável 3</h1>
+          <h1 id="elemento-ordenavel-3">Elemento Ordenável 3</h1>
         </div>
       </div>
 
@@ -182,6 +182,7 @@ const ElementoOrdenavel3: React.FC = () => {
         {products.map((product) => (
           <div
             key={product.id}
+            id={`elemento-ordenavel-3-item${product.id}`}
             className="col-xxl-3"
             draggable
             onDragStart={(e) => handleDragStart(e, product)}

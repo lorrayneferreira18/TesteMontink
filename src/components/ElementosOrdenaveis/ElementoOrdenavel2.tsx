@@ -168,11 +168,11 @@ const ElementoOrdenavel2: React.FC = () => {
   return (
     <div className="row">
       <div className="col-xxl-12">
-        <h1>Elemento Ordenável 2</h1>
+        <h1 id="elemento-ordenavel-2">Elemento Ordenável 2</h1>
       </div>
 
       {/* Lista de Tarefas (Arrastável) */}
-      <div className="col-lg-6 mb-4">
+      <div id="elemento-ordenavel-2-tarefas" className="col-lg-6 mb-4">
         <div className="card shadow mb-4">
           <div className="card-header py-3">
             <h6 className="text-primary fw-bold m-0">Lista de Tarefas</h6>
@@ -238,7 +238,7 @@ const ElementoOrdenavel2: React.FC = () => {
       </div>
 
       {/* Cards de Cores (Editáveis) */}
-      <div className="col">
+      <div id="elemento-ordenavel-2-cores" className="col">
         <div className="row">
           {colors.map((color) => (
             <div key={color.id} className="col-lg-6 mb-4">
@@ -363,6 +363,7 @@ const ElementoOrdenavel2: React.FC = () => {
                     {bootstrapColors.map((color) => (
                       <div
                         key={color.code}
+                        id={`elemento-ordenavel-1-item${color.code}`}
                         className="col-4 col-md-3"
                         onClick={() => {
                           setTempColorName(color.name);

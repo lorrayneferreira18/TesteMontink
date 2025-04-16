@@ -165,11 +165,12 @@ const ElementoOrdenavel5: React.FC = () => {
       style={{ margin: "0px -12px 0px" }}
     >
       <div className="col-xxl-12">
-        <h1>Elemento Ordenável 5</h1>
+        <h1 id="elemento-ordenavel-5">Elemento Ordenável 5</h1>
       </div>
 
       <div
         className="col-xxl-12"
+        id="elemento-ordenavel-5-titulo"
         draggable
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -191,12 +192,18 @@ const ElementoOrdenavel5: React.FC = () => {
               <div className="row g-0">
                 <div className="col-md-6">
                   <div className="text-white p-4 p-md-5">
-                    <h2 className="fw-bold text-white mb-3">{banner.title}</h2>
+                    <h2
+                      className="fw-bold text-white mb-3"
+                      id="elemento-ordenavel-5-subtitulo"
+                    >
+                      {banner.title}
+                    </h2>
                     <p className="mb-4">{banner.subtitle}</p>
                     <div className="my-3">
                       <a
                         className={banner.button1.style}
                         role="button"
+                        id="elemento-ordenavel-5-botao1"
                         href={banner.button1.link}
                         onClick={(e) => e.stopPropagation()}
                         style={{ backgroundColor: banner.button1.color }}
@@ -206,6 +213,7 @@ const ElementoOrdenavel5: React.FC = () => {
                       <a
                         className={banner.button2.style}
                         role="button"
+                        id="elemento-ordenavel-5-botao2"
                         href={banner.button2.link}
                         onClick={(e) => e.stopPropagation()}
                         style={{ backgroundColor: banner.button2.color }}
@@ -222,6 +230,7 @@ const ElementoOrdenavel5: React.FC = () => {
                   <img
                     className="w-100 h-100 fit-cover"
                     src={banner.image}
+                    id="elemento-ordenavel-5-imagem"
                     alt="Banner"
                   />
                 </div>
@@ -357,6 +366,7 @@ const ElementoOrdenavel5: React.FC = () => {
                       {bootstrapColors.map((color) => (
                         <div
                           key={`button1-${color.value}`}
+                          id={`elemento-ordenavel-5-item${color.value}`}
                           className="col-3"
                           onClick={() => selectColor(color.value, "button1")}
                           style={{
@@ -439,6 +449,7 @@ const ElementoOrdenavel5: React.FC = () => {
                         <div
                           key={`button2-${color.value}`}
                           className="col-3"
+                          id={`elemento-ordenavel-5-item${color.value}`}
                           onClick={() => selectColor(color.value, "button2")}
                           style={{
                             backgroundColor: color.value,

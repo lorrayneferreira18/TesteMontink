@@ -124,6 +124,7 @@ const ElementoOrdenavel1: React.FC = () => {
       {cards.map((card) => (
         <div
           key={card.id}
+          id={`elemento-ordenavel-1-item${card.id}`}
           className={`col-md-6 col-xl-3 mb-4 ${
             dragOverId === card.id ? "drag-over" : ""
           }`}

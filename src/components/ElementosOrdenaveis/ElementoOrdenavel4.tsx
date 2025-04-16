@@ -134,12 +134,13 @@ const ElementoOrdenavel4: React.FC = () => {
       style={{ marginTop: "0px" }}
     >
       <div className="col-xxl-12">
-        <h1>Elemento Ordenável 4</h1>
+        <h1 id="elemento-ordenavel-3">Elemento Ordenável 4</h1>
       </div>
 
       {images.map((image) => (
         <div
           key={image.id}
+          id={`elemento-ordenavel-4-item${image.id}`}
           className="col-xxl-6"
           draggable
           onDragStart={(e) => handleDragStart(e, image)}

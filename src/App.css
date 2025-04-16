@@ -58,7 +58,15 @@ body {
   flex: 1;
   padding-bottom: 60px; /* Espaço para o footer */
 }
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
+.row {
+  order: var(--element-order);
+}
 [id^="elemento-ordenavel-1-"] {
   scroll-margin-top: 100px;
 }

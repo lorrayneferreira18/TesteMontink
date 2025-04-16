@@ -2,9 +2,52 @@ import React, { useState, useEffect } from "react";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import LinkSuave from "../LinkSuave/LinkSuave";
 import { Link } from "react-scroll";
-const Navbar: React.FC = () => {
-  const [showModal, setShowModal] = useState(false);
+import { NavbarProps } from "@/types";
 
+interface NavItem {
+  id: number;
+  title: string;
+  href: string;
+  dropdownItems: {
+    href: string;
+    text: string;
+  }[];
+}
+
+const Navbar: React.FC<NavbarProps> = ({ navItems, onOrderChange }) => {
+  const [showModal, setShowModal] = useState(false);
+  const [draggedItem, setDraggedItem] = useState<NavItem | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, item: NavItem) => {
+    setDraggedItem(item);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", item.id.toString());
+  };
+  const handleDragOver = (e: React.DragEvent, item: NavItem) => {
+    e.preventDefault();
+    e.currentTarget.classList.add("drag-over");
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.currentTarget.classList.remove("drag-over");
+  };
+
+  const handleDrop = (e: React.DragEvent, targetItem: NavItem) => {
+    e.preventDefault();
+    e.currentTarget.classList.remove("drag-over");
+
+    if (!draggedItem) return;
+
+    const draggedId = parseInt(e.dataTransfer.getData("text/plain"));
+    const currentIndex = navItems.findIndex((item) => item.id === draggedId);
+    const targetIndex = navItems.findIndex((item) => item.id === targetItem.id);
+
+    if (currentIndex !== targetIndex) {
+      const newItems = [...navItems];
+      const [removed] = newItems.splice(currentIndex, 1);
+      newItems.splice(targetIndex, 0, removed);
+      onOrderChange(newItems);
+    }
+  };
   // Inicializa os dropdowns do Bootstrap
   useEffect(() => {
     const dropdowns = document.querySelectorAll(".dropdown-toggle");
@@ -65,189 +108,45 @@ const Navbar: React.FC = () => {
         <hr className="sidebar-divider my-0" />
         <ul className="navbar-nav text-light" id="accordionSidebar">
           <li className="nav-item">
-            {/* Elemento Ordenável 1 */}
-            <div className="nav-item dropdown" style={{ padding: "15px" }}>
-              <a
-                aria-expanded="false"
-                className="dropdown-toggle link-light"
-                data-bs-toggle="dropdown"
-                href="#elemento-ordenavel-1-item1"
+            {navItems.map((item) => (
+              <div
+                key={item.id}
+                className="nav-item dropdown"
+                style={{ padding: "15px" }}
+                draggable
+                onDragStart={(e) => handleDragStart(e, item)}
+                onDragOver={(e) => handleDragOver(e, item)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, item)}
               >
-                <i className="fas fa-grip-horizontal icon-draggable"></i>
-                Elemento Ordenável 1
-              </a>
-              <div className="dropdown-menu" data-bs-popper="none">
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-1-item1"
+                <a
+                  aria-expanded="false"
+                  className="dropdown-toggle link-light"
+                  data-bs-toggle="dropdown"
+                  href={item.href}
                 >
-                  Elemento 1
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-1-item2"
-                >
-                  Elemento 2
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-1-item3"
-                >
-                  Elemento 3
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-1-item4"
-                >
-                  Elemento 4
-                </LinkSuave>
+                  <i className="fas fa-grip-horizontal icon-draggable"></i>
+                  {item.title}
+                </a>
+                <div className="dropdown-menu" data-bs-popper="none">
+                  {item.dropdownItems.map((dropdownItem, index) => (
+                    <LinkSuave
+                      key={index}
+                      className="dropdown-item"
+                      href={dropdownItem.href}
+                    >
+                      {dropdownItem.text}
+                    </LinkSuave>
+                  ))}
+                </div>
               </div>
-            </div>
+            ))}
 
-            {/* Elemento Ordenável 2 */}
-            <div className="nav-item dropdown" style={{ padding: "15px" }}>
-              <a
-                aria-expanded="false"
-                className="dropdown-toggle link-light"
-                data-bs-toggle="dropdown"
-                href="#elemento-ordenavel-2"
-              >
-                <i className="fas fa-grip-horizontal icon-draggable"></i>
-                Elemento Ordenável 2
-              </a>
-              <div className="dropdown-menu" data-bs-popper="none">
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-2"
-                >
-                  Lista de Tarefas
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-2-cores"
-                >
-                  Grade de Cores
-                </LinkSuave>
-              </div>
-            </div>
-
-            {/* Elemento Ordenável 3 */}
-            <div className="nav-item dropdown" style={{ padding: "15px" }}>
-              <a
-                aria-expanded="false"
-                className="dropdown-toggle link-light"
-                data-bs-toggle="dropdown"
-                href="#elemento-ordenavel-3"
-              >
-                <i className="fas fa-grip-horizontal icon-draggable"></i>
-                Elemento Ordenável 3
-              </a>
-              <div className="dropdown-menu" data-bs-popper="none">
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-3"
-                >
-                  Produto 1
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-3-item2"
-                >
-                  Produto 2
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-3-item3"
-                >
-                  Produto 3
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-3-item4"
-                >
-                  Produto 4
-                </LinkSuave>
-              </div>
-            </div>
-
-            {/* Elemento Ordenável 4 */}
-            <div className="nav-item dropdown" style={{ padding: "15px" }}>
-              <a
-                aria-expanded="false"
-                className="dropdown-toggle link-light"
-                data-bs-toggle="dropdown"
-                href="#elemento-ordenavel-4"
-              >
-                <i className="fas fa-grip-horizontal icon-draggable"></i>
-                Elemento Ordenável 4
-              </a>
-              <div className="dropdown-menu" data-bs-popper="none">
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-4"
-                >
-                  Imagem 1
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-4-item2"
-                >
-                  Imagem 2
-                </LinkSuave>
-              </div>
-            </div>
-
-            {/* Elemento Ordenável 5 */}
-            <div className="nav-item dropdown" style={{ padding: "15px" }}>
-              <a
-                aria-expanded="false"
-                className="dropdown-toggle link-light"
-                data-bs-toggle="dropdown"
-                href="#elemento-ordenavel-5"
-              >
-                <i className="fas fa-grip-horizontal icon-draggable"></i>
-                Elemento Ordenável 5
-              </a>
-              <div className="dropdown-menu" data-bs-popper="none">
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-5"
-                >
-                  Título
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-5-subtitulo"
-                >
-                  Subtítulo
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-5-botao1"
-                >
-                  Botao 1
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-5-botao2"
-                >
-                  Botao 2
-                </LinkSuave>
-                <LinkSuave
-                  className="dropdown-item"
-                  href="#elemento-ordenavel-5-imagem"
-                >
-                  Imagem
-                </LinkSuave>
-              </div>
-            </div>
-
+            {/* Mantenha os botões fixos abaixo */}
             <div className="nav-item" style={{ padding: "15px" }}>
               <button
                 type="button"
                 className="btn btn-success text-light fw-bold w-100"
-                data-bs-toggle="modal"
-                data-bs-target="#exampleModal"
                 onClick={() => setShowModal(true)}
               >
                 Modelo de Modal de Componente
@@ -263,7 +162,6 @@ const Navbar: React.FC = () => {
               </button>
             </div>
           </li>
-          <li className="nav-item"></li>
         </ul>
         <div className="text-center d-none d-md-inline"></div>
       </div>

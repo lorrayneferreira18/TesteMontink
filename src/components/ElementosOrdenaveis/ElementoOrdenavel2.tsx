@@ -22,16 +22,17 @@ const ElementoOrdenavel2: React.FC = () => {
     { id: 2, name: "Tarefa 2", time: "11:30 AM", completed: false },
     { id: 3, name: "Tarefa 3", time: "12:30 AM", completed: false },
   ]);
-
-  // Estados para as cores (agora editável)
-  const [colors, setColors] = useState<ColorItem[]>([
+  // Paleta de cores Bootstrap
+  const bootstrapColors: ColorItem[] = [
     { id: 1, name: "Primary", color: "primary", code: "#4e73df" },
     { id: 2, name: "Success", color: "success", code: "#1cc88a" },
     { id: 3, name: "Info", color: "info", code: "#36b9cc" },
     { id: 4, name: "Warning", color: "warning", code: "#f6c23e" },
     { id: 5, name: "Danger", color: "danger", code: "#e74a3b" },
     { id: 6, name: "Secondary", color: "secondary", code: "#858796" },
-  ]);
+  ];
+  // Estados para as cores
+  const [colors, setColors] = useState<ColorItem[]>(bootstrapColors);
 
   // Estados para o drag and drop
   const [draggedItem, setDraggedItem] = useState<TaskItem | null>(null);
@@ -46,7 +47,7 @@ const ElementoOrdenavel2: React.FC = () => {
   const [tempName, setTempName] = useState("");
   const [tempTime, setTempTime] = useState("");
   const [tempColorName, setTempColorName] = useState("");
-  const [tempColorCode, setTempColorCode] = useState("");
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   // Funções para drag and drop (mantidas as mesmas)
   const handleDragStart = (
@@ -128,20 +129,30 @@ const ElementoOrdenavel2: React.FC = () => {
   const handleColorClick = (color: ColorItem) => {
     setEditingColor(color);
     setTempColorName(color.name);
-    setTempColorCode(color.code);
     setShowColorModal(true);
   };
 
   const handleSaveColorChanges = () => {
     if (!editingColor) return;
 
-    setColors(
-      colors.map((color) =>
-        color.id === editingColor.id
-          ? { ...color, name: tempColorName, code: tempColorCode }
-          : color
-      )
-    );
+    // Encontra a cor selecionada na paleta
+    const selectedColor = bootstrapColors.find((c) => c.name === tempColorName);
+
+    if (selectedColor) {
+      setColors(
+        colors.map((color) =>
+          color.id === editingColor.id
+            ? {
+                ...color,
+                name: tempColorName,
+                color: selectedColor.color,
+                code: selectedColor.code,
+              }
+            : color
+        )
+      );
+    }
+
     setShowColorModal(false);
   };
 
@@ -232,9 +243,12 @@ const ElementoOrdenavel2: React.FC = () => {
           {colors.map((color) => (
             <div key={color.id} className="col-lg-6 mb-4">
               <div
-                className={`card text-white bg-${color.color} shadow`}
+                className="card text-white shadow"
                 onClick={() => handleColorClick(color)}
-                style={{ cursor: "pointer" }}
+                style={{
+                  cursor: "pointer",
+                  backgroundColor: color.code,
+                }}
               >
                 <div className="card-body">
                   <p className="m-0">{color.name}</p>
@@ -326,26 +340,57 @@ const ElementoOrdenavel2: React.FC = () => {
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">Código da Cor (HEX)</label>
-              <div className="input-group">
-                <span className="input-group-text">#</span>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={tempColorCode.replace("#", "")}
-                  onChange={(e) => setTempColorCode(`#${e.target.value}`)}
-                  maxLength={6}
-                />
+              <label className="form-label">Selecionar Cor</label>
+              <div className="d-flex align-items-center mb-2">
+                <div
+                  className="color-preview me-3"
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    backgroundColor: editingColor?.code || "#ffffff",
+                    border: "1px solid #dee2e6",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setShowColorPicker(!showColorPicker)}
+                ></div>
+                <span>{editingColor?.code || "Selecione uma cor"}</span>
               </div>
-              <div
-                className="mt-2 p-3 rounded"
-                style={{
-                  backgroundColor: tempColorCode,
-                  border: "1px solid #dee2e6",
-                }}
-              >
-                Pré-visualização
-              </div>
+
+              {showColorPicker && (
+                <div className="color-palette p-2 border rounded">
+                  <div className="row g-2">
+                    {bootstrapColors.map((color) => (
+                      <div
+                        key={color.code}
+                        className="col-4 col-md-3"
+                        onClick={() => {
+                          setTempColorName(color.name);
+                          if (editingColor) {
+                            setEditingColor({
+                              ...editingColor,
+                              color: color.color,
+                              code: color.code,
+                            });
+                          }
+                          setShowColorPicker(false);
+                        }}
+                        style={{
+                          backgroundColor: color.code,
+                          height: "40px",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          border:
+                            editingColor?.code === color.code
+                              ? "2px solid #000"
+                              : "1px solid #dee2e6",
+                        }}
+                        title={color.name}
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </form>
         </div>

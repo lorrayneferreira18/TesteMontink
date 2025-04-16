@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./App.css";
@@ -10,12 +10,65 @@ import ElementoOrdenavel3 from "./components/ElementosOrdenaveis/ElementoOrdenav
 import ElementoOrdenavel4 from "./components/ElementosOrdenaveis/ElementoOrdenavel4";
 import ElementoOrdenavel5 from "./components/ElementosOrdenaveis/ElementoOrdenavel5";
 
+// Interface para os componentes disponíveis para busca
+interface ComponentItem {
+  id: number;
+  name: string;
+  component: React.ReactNode; // Alterado de JSX.Element para React.ReactNode
+}
+
 const App: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Lista de componentes disponíveis para busca
+  const allComponents = useMemo<ComponentItem[]>(
+    () => [
+      {
+        id: 1,
+        name: "Elemento Ordenável 1",
+        component: <ElementoOrdenavel1 />,
+      },
+      {
+        id: 2,
+        name: "Elemento Ordenável 2",
+        component: <ElementoOrdenavel2 />,
+      },
+      {
+        id: 3,
+        name: "Elemento Ordenável 3",
+        component: <ElementoOrdenavel3 />,
+      },
+      {
+        id: 4,
+        name: "Elemento Ordenável 4",
+        component: <ElementoOrdenavel4 />,
+      },
+      {
+        id: 5,
+        name: "Elemento Ordenável 5",
+        component: <ElementoOrdenavel5 />,
+      },
+    ],
+    []
+  );
+
+  const filteredComponents = useMemo(() => {
+    if (!searchTerm.trim()) return allComponents;
+    const term = searchTerm.toLowerCase();
+    return allComponents.filter((comp) =>
+      comp.name.toLowerCase().includes(term)
+    );
+  }, [searchTerm, allComponents]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
+
   return (
     <div
       id="page-top"
       data-bs-theme="light"
-      bs-app-theme="dark"
+      data-bs-app-theme="dark"
       style={
         {
           "--highlight-bg": "#000",
@@ -25,10 +78,8 @@ const App: React.FC = () => {
       }
     >
       <div id="wrapper" className="d-flex">
-        {/* Navbar lateral */}
         <Navbar />
 
-        {/* Conteúdo principal */}
         <div
           className="d-flex flex-column"
           id="content-wrapper"
@@ -47,6 +98,7 @@ const App: React.FC = () => {
                         textAlign: "center",
                         marginLeft: "37px",
                       }}
+                      onSubmit={handleSearch}
                     >
                       <div className="input-group">
                         <input
@@ -54,10 +106,12 @@ const App: React.FC = () => {
                           className="bg-light form-control border-0 small"
                           placeholder="Buscar Componente"
                           aria-label="Buscar Componente"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <button
                           className="btn btn-primary py-0"
-                          type="button"
+                          type="submit"
                           aria-label="Buscar"
                         >
                           <i className="fas fa-search"></i>
@@ -71,14 +125,28 @@ const App: React.FC = () => {
 
             <div className="container-fluid">
               <div className="text-start d-sm-flex justify-content-between align-items-center mb-4">
-                <h3 className="text-dark mb-0">Elementos</h3>
+                <h3 className="text-dark mb-0">
+                  {searchTerm.trim() ? "Resultados da Busca" : "Elementos"}
+                </h3>
               </div>
 
-              <ElementoOrdenavel1 />
-              <ElementoOrdenavel2 />
-              <ElementoOrdenavel3 />
-              <ElementoOrdenavel4 />
-              <ElementoOrdenavel5 />
+              {filteredComponents.length > 0 ? (
+                filteredComponents.map((comp) => (
+                  <div key={comp.id}>{comp.component}</div>
+                ))
+              ) : searchTerm.trim() ? (
+                <div className="alert alert-info">
+                  Nenhum componente encontrado para "{searchTerm}"
+                </div>
+              ) : (
+                <>
+                  <ElementoOrdenavel1 />
+                  <ElementoOrdenavel2 />
+                  <ElementoOrdenavel3 />
+                  <ElementoOrdenavel4 />
+                  <ElementoOrdenavel5 />
+                </>
+              )}
             </div>
           </div>
 
